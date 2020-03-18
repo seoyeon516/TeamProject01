@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tps.mng.mapper.xml.UserMapper">
+
+	<insert id = "insertUser" parameterType="com.tps.mng.dto.UserDto">
+    INSERT INTO user (USER_KANJI_NAME, USER_KANA_NAME, USER_KOR_NAME, USER_ENG_NAME,
+    USER_SYAINBANGO, USER_EIGYOUID, USER_EKKI, USER_NYUUSYABI,USER_YAKUSYOKU,
+    USER_STATUS,USER_KEYMAN, USER_RENKEIKIKAN, USER_MEMO, USER_BIKOU )
+    VALUES (#{userKanjiName}, #{userKanaName}, #{userKorName}, #{userEngName},
+    #{userSyainBango},#{userEigyoubango},#{userEkki}, #{userNyuusyabi}, #{userYakushoku},
+    #{userStatus}, #{userKeyman}, #{userRenkeikikan}, #{userMemo}, #{userBikou})
+    </insert>
+
+	<select id="selectEigyouList" parameterType="java.lang.String"
+		resultType="com.tps.mng.entity.Eigyou">
+		SELECT eigyou_id, eigyou_syainbango, eigyou_name FROM eigyou
+	</select>
+
+	<update id="retireUser" parameterType="com.tps.mng.entity.User">
+		UPDATE user SET USER_STATUS=5, USER_TAISYOKUBI=#{userTaisyokubi} WHERE user_id=#{userId}
+	</update>
+
+	<insert id="insertGenbaHistory" parameterType="com.tps.mng.entity.GenbaHistory">
+		insert into genba_history
+		(USER_ID, USER_GENBA_ID, EIGYOU_ID, GENBA_HISTORY_STATUS, USER_GENBA_NYUUJYOUBI, USER_GENBA_TAIJYOUBI, USER_GENBA_HYOUKA,
+		USER_GENBA_STATUS, USER_GENBA_KIKAN, USER_GENBA_TANKIN)
+		select USER_ID, USER_GENBA_ID, EIGYOU_ID, 0, USER_GENBA_NYUUJYOUBI, #{userGenbaTaijyoubi}, USER_GENBA_HYOUKA,
+		USER_GENBA_STATUS, USER_GENBA_KIKAN, USER_GENBA_TANKIN
+		from genba_history
+		where user_id=#{userId} and USER_GENBA_NYUUJYOUBI=(select max(USER_GENBA_NYUUJYOUBI) from genba_history where user_id=#{userId});
+	</insert>
+
+    <select id="selectEigyouList2" resultType="com.tps.mng.entity.Eigyou">
+		SELECT EIGYOU_ID as
+		eigyouId, EIGYOU_SYAINBANGO as eigyouSyainbango,
+		EIGYOU_NAME as
+		eigyouName FROM EIGYOU;
+	</select>
+
+	<select id="selectUser" parameterType="java.lang.Integer"
+		resultType="com.tps.mng.dto.UserAllInfoDto">
+   		SELECT a.USER_ID as userId, USER_KANJI_NAME as userKanjiName,
+		USER_KANA_NAME as userKanaName, USER_KOR_NAME as userKorName,
+		USER_ENG_NAME as userEngName, USER_SYAINBANGO as userSyainBango,
+		USER_YAKUSYOKU as userYakushoku, USER_STATUS as userStatus,
+		USER_TPS_KEIREKI as userTpsKeireki, USER_IPPAN_KEIREKI as userIppanKeireki, USER_BIKOU as userBikou,
+		USER_KEYMAN as userKeyman, USER_KYUURYOU as userKyuuryou, USER_EIGYOUID as eigyouId,
+		USER_NYUUSYABI as userNyuusyabi, USER_TAISYOKUBI as userTaisyokubi,
+		USER_RENKEIKIKAN as userRenkeikikan, USER_EKKI as userEkki, USER_HATSUGENBA as userHatsugenba,
+		USER_MEMO as userMemo
+		FROM manager.USER a
+		WHERE a.USER_ID = #{user_Id};
+	</select>
+
+	<update id="editUser" parameterType="com.tps.mng.entity.User">
+		UPDATE MANAGER.USER SET USER_KANJI_NAME = #{userKanjiName}, USER_KANA_NAME = #{userKanaName},
+		USER_KOR_NAME = #{userKorName}, USER_ENG_NAME = #{userEngName},
+		USER_SYAINBANGO = #{userSyainBango}, USER_YAKUSYOKU = #{userYakushoku},
+		USER_STATUS = #{userStatus}, USER_TPS_KEIREKI = #{userTpsKeireki},
+		USER_IPPAN_KEIREKI = #{userIppanKeireki}, USER_BIKOU = #{userBikou},
+		USER_KEYMAN = #{userKeyman}, USER_KYUURYOU = #{userKyuuryou},
+		USER_EIGYOUID = #{userEigyouId}, USER_NYUUSYABI = #{userNyuusyabi},
+		USER_TAISYOKUBI = #{userTaisyokubi}, USER_RENKEIKIKAN = #{userRenkeikikan},
+		USER_EKKI = #{userEkki}, USER_MEMO = #{userMemo}, USER_HATSUGENBA = #{userHatsugenba}
+		WHERE USER_ID=#{userId};
+	</update>
+
+	<update id="genbaNasiEditUser" parameterType="com.tps.mng.entity.User">
+		UPDATE MANAGER.USER SET USER_KANJI_NAME = #{userKanjiName}, USER_KANA_NAME =#{userKanaName},
+		USER_KOR_NAME = #{userKorName}, USER_ENG_NAME =#{userEngName}, USER_SYAINBANGO =#{userSyainBango},
+		USER_YAKUSYOKU =#{userYakushoku}, USER_STATUS = #{userStatus}, USER_TPS_KEIREKI =#{userTpsKeireki},
+		USER_IPPAN_KEIREKI = #{userIppanKeireki}, USER_BIKOU= #{userBikou}, USER_KEYMAN =#{userKeyman},
+		USER_KYUURYOU =#{userKyuuryou}, USER_EIGYOUID = #{userEigyouId}, USER_NYUUSYABI =#{userNyuusyabi},
+		USER_TAISYOKUBI = #{userTaisyokubi}, USER_RENKEIKIKAN= #{userRenkeikikan}, USER_EKKI= #{userEkki},
+		USER_MEMO = #{userMemo},USER_HATSUGENBA = #{userHatsugenba}
+		WHERE USER_ID=#{userId};
+	</update>
+
+	<insert id="insertGenbaHistory2" parameterType="com.tps.mng.entity.GenbaHistory">
+		INSERT INTO genba_history(GENBA_HISTORY_ID, USER_ID, USER_GENBA_ID,
+		EIGYOU_ID, GENBA_HISTORY_STATUS, USER_GENBA_NYUUJYOUBI,
+		USER_GENBA_TAIJYOUBI, USER_GENBA_HYOUKA, USER_GENBA_STATUS,
+		USER_GENBA_KIKAN, USER_GENBA_TANKIN)
+		values ((SELECT maxnumber + 1 FROM(SELECT IFNULL(MAX(GENBA_HISTORY_ID),-1)
+		AS maxnumber FROM genba_history)maxnum), #{userId}, #{userGenbaId}, #{eigyouId},
+		#{genbaHistoryStatus}, #{userGenbaNyuujyoubi}, #{userGenbaTaijyoubi},
+		#{userGenbaHyouka}, #{userGenbaStatus}, #{userGenbaKikan},#{userGenbaTaikin})
+	</insert>
+
+	<update id="genbaHistorySyusei" parameterType="java.lang.Integer">
+		UPDATE genba_history SET GENBA_HISTORY_STATUS = 0
+		WHERE USER_ID = #{id};
+	</update>
+
+	<update id="updateGenbaHistory" parameterType="com.tps.mng.entity.GenbaHistory">
+		UPDATE manager.genba_history
+		SET EIGYOU_ID = #{eigyouId}, USER_GENBA_STATUS = #{userGenbaStatus},
+		USER_GENBA_NYUUJYOUBI = #{userGenbaNyuujyoubi}, USER_GENBA_TAIJYOUBI = #{userGenbaTaijyoubi},
+		USER_GENBA_HYOUKA = #{userGenbaHyouka},
+		USER_GENBA_KIKAN = #{userGenbaKikan}, USER_GENBA_TANKIN = #{userGenbaTaikin}
+		WHERE USER_ID = #{userId} and USER_GENBA_ID = #{userGenbaId};
+	</update>
+</mapper>
